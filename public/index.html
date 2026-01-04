@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#ff3b1a" />
-    <title>Ryuuda — Discord Bot</title>
+    <title>Ryuuda</title>
     <meta
       name="description"
       content="Ryuuda"
@@ -646,15 +646,22 @@
         <div>© <span id="y"></span> Ryuuda & *R2U: Ready to use</div>
       </footer>
     </div>
-    <script>
+    <script type="module">
       document.getElementById("y").textContent = new Date().getFullYear();
 
-      // Discord OAuth2 Configuration (Implicit Grant Flow - client-side only)
+      // Discord OAuth2 PKCE Configuration
       const DISCORD_CONFIG = {
-        clientId: '1456640479201595453', // Replace with your actual Discord app client ID
-        redirectUri: window.location.origin + window.location.pathname, // Current page as redirect URI (must match in Discord app settings)
-        scope: 'identify email', // Scopes for user info and email
-        responseType: 'token', // Implicit flow: returns access_token in URL hash
+        clientId: '1456640479201595453',
+        redirectUri: 'https://ryuuda.vercel.app/',
+        scope: 'identify email',
+      };
+
+      // Helper: base64url-encode (no padding)
+      const base64url = (str) => {
+        return btoa(String(str))
+          .replace(/=/g, '')
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_');
       };
 
       class DiscordAuth {
@@ -665,8 +672,8 @@
         }
 
         async init() {
-          // Parse URL hash for access_token on callback
-          this.parseCallback();
+          // Handle callback if code is in URL
+          await this.handleCallback();
 
           // Check for stored token
           await this.checkAuth();
@@ -674,35 +681,105 @@
           this.renderAuthButton();
         }
 
-        parseCallback() {
-          // Clear URL hash to clean up (optional, but good UX)
-          if (window.location.hash) {
-            const hash = window.location.hash.substring(1); // Remove #
-            const params = new URLSearchParams(hash);
-            this.accessToken = params.get('access_token');
-            const tokenType = params.get('token_type');
-            const expiresIn = params.get('expires_in');
+        // 1. Generate PKCE pair
+        async generatePKCE() {
+          const encoder = new TextEncoder();
+          const random = crypto.getRandomValues(new Uint8Array(32));
+          const codeVerifier = base64url(String.fromCharCode(...random));
+          // SHA-256 hash → base64url
+          const challengeBuf = await crypto.subtle.digest(
+            'SHA-256',
+            encoder.encode(codeVerifier)
+          );
+          const codeChallenge = base64url(String.fromCharCode(...new Uint8Array(challengeBuf)));
+          return { codeVerifier, codeChallenge };
+        }
 
-            if (this.accessToken && tokenType === 'Bearer') {
-              // Store token temporarily (in memory; for persistence, use localStorage but be cautious with security)
-              sessionStorage.setItem('discord_access_token', this.accessToken);
-              sessionStorage.setItem('discord_token_expires', Date.now() + (parseInt(expiresIn) * 1000));
+        // 2. Build the authorization URL
+        async login() {
+          const { codeVerifier, codeChallenge } = await this.generatePKCE();
+          const params = new URLSearchParams({
+            response_type: 'code',
+            client_id: DISCORD_CONFIG.clientId,
+            redirect_uri: DISCORD_CONFIG.redirectUri,
+            scope: DISCORD_CONFIG.scope,
+            state: crypto.randomUUID(),
+            code_challenge: codeChallenge,
+            code_challenge_method: 'S256',
+            prompt: 'consent'
+          });
 
-              // Clean URL
-              window.history.replaceState({}, document.title, window.location.pathname);
+          // Store verifier & state
+          sessionStorage.setItem('pkce_verifier', codeVerifier);
+          sessionStorage.setItem('oauth_state', params.get('state'));
 
-              // Fetch user info immediately
-              this.fetchUserInfo();
-            } else {
-              // Handle error
-              const error = params.get('error');
-              const errorDesc = params.get('error_description');
-              if (error) {
-                console.error('OAuth Error:', error, errorDesc);
-                // Optionally show error message to user
+          const authUrl = `https://discord.com/oauth2/authorize?${params.toString()}`;
+          window.location.href = authUrl;
+        }
+
+        // 3. Handle callback & exchange code for token
+        async handleCallback() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const code = urlParams.get('code');
+          const state = urlParams.get('state');
+          const error = urlParams.get('error');
+
+          if (error) {
+            console.error('OAuth Error:', error, urlParams.get('error_description'));
+            this.clearUrl();
+            return;
+          }
+
+          if (code) {
+            const storedState = sessionStorage.getItem('oauth_state');
+            if (state !== storedState) {
+              console.error('State mismatch');
+              this.clearUrl();
+              return;
+            }
+
+            const codeVerifier = sessionStorage.getItem('pkce_verifier');
+            if (!codeVerifier) {
+              console.error('PKCE verifier missing');
+              this.clearUrl();
+              return;
+            }
+
+            try {
+              const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                  grant_type: 'authorization_code',
+                  client_id: DISCORD_CONFIG.clientId,
+                  code,
+                  redirect_uri: DISCORD_CONFIG.redirectUri,
+                  code_verifier: codeVerifier
+                })
+              });
+
+              const tokenData = await tokenResponse.json();
+              if (tokenData.access_token) {
+                this.accessToken = tokenData.access_token;
+                sessionStorage.setItem('discord_access_token', this.accessToken);
+                sessionStorage.setItem('discord_token_expires', Date.now() + (tokenData.expires_in * 1000));
+                await this.fetchUserInfo();
+              } else {
+                console.error('Token exchange failed:', tokenData);
               }
+            } catch (err) {
+              console.error('Token exchange error:', err);
+            } finally {
+              // Clean up
+              sessionStorage.removeItem('pkce_verifier');
+              sessionStorage.removeItem('oauth_state');
+              this.clearUrl();
             }
           }
+        }
+
+        clearUrl() {
+          window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         async checkAuth() {
@@ -713,7 +790,6 @@
             this.accessToken = storedToken;
             await this.fetchUserInfo();
           } else {
-            // Clear expired token
             this.clearAuth();
           }
         }
@@ -730,7 +806,6 @@
 
             if (response.ok) {
               this.user = await response.json();
-              // Also fetch connections or other info if needed, but keep it simple
             } else {
               console.error('Failed to fetch user info:', response.status);
               this.clearAuth();
@@ -741,21 +816,10 @@
           }
         }
 
-        async login() {
-          const authUrl = new URL('https://discord.com/api/oauth2/authorize');
-          authUrl.searchParams.append('client_id', DISCORD_CONFIG.clientId);
-          authUrl.searchParams.append('redirect_uri', encodeURIComponent(DISCORD_CONFIG.redirectUri));
-          authUrl.searchParams.append('response_type', DISCORD_CONFIG.responseType);
-          authUrl.searchParams.append('scope', DISCORD_CONFIG.scope);
-          window.location.href = authUrl.toString();
-        }
-
         async logout() {
           this.clearAuth();
-          // Optionally revoke token on Discord side, but not necessary for implicit flow
           this.renderAuthButton();
-          // Redirect to clean URL if needed
-          window.location.hash = '';
+          this.clearUrl();
         }
 
         clearAuth() {
@@ -801,7 +865,7 @@
                     <div class="user-name">${displayName}</div>
                     ${this.user.email ? `<div class="user-email">${this.user.email}</div>` : ''}
                   </div>
-                  <div class="dropdown-item" onclick="window.open('https://discord.com/users/${this.user.id}', '_blank')">
+                  <div class="dropdown-item" onclick="window.open('https://discord.com/users/${auth.user.id}', '_blank')">
                     <i class="fas fa-user"></i>
                     <span>View Profile</span>
                   </div>
@@ -828,16 +892,11 @@
       // Initialize auth system
       const auth = new DiscordAuth();
 
-      // Listen for auth state changes (useful if you have multiple tabs)
+      // Listen for storage events (multi-tab sync)
       window.addEventListener('storage', (e) => {
-        if (e.key === 'discord_auth_state') {
-          auth.checkAuth().then(() => auth.renderAuthButton());
+        if (e.key && e.key.startsWith('discord_')) {
+          location.reload(); // Simple reload for sync
         }
-      });
-
-      // Handle page load for immediate callback parsing
-      window.addEventListener('load', () => {
-        auth.parseCallback();
       });
     </script>
   </body>
