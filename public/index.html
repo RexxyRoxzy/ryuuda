@@ -10,7 +10,6 @@
       content="Ryuuda"
     />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
       :root {
         --bg0: #07060a;
@@ -27,16 +26,13 @@
         --discord-blurple: #5865F2;
         --discord-green: #57F287;
       }
-
       * {
         box-sizing: border-box;
       }
-
       html,
       body {
         height: 100%;
       }
-
       body {
         margin: 0;
         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
@@ -60,18 +56,15 @@
           linear-gradient(180deg, var(--bg1), var(--bg0));
         overflow-x: hidden;
       }
-
       a {
         color: inherit;
         text-decoration: none;
       }
-
       .wrap {
         max-width: var(--max);
         margin: 0 auto;
         padding: 22px 18px 70px;
       }
-
       .nav {
         display: flex;
         align-items: center;
@@ -91,19 +84,16 @@
         top: 14px;
         z-index: 10;
       }
-
       .brand {
         display: flex;
         align-items: center;
         gap: 10px;
         min-width: 20px;
       }
-
       .brandName {
         font-weight: 750;
         letter-spacing: 0.2px;
       }
-
       .logoPH {
         width: 34px;
         height: 34px;
@@ -118,7 +108,6 @@
         box-shadow: 0 18px 38px rgba(255, 70, 20, 0.18);
         overflow: hidden;
       }
-
       .links {
         display: flex;
         align-items: center;
@@ -126,20 +115,17 @@
         color: var(--muted);
         font-size: 13px;
       }
-
       .links a {
         padding: 10px 10px;
         border-radius: 999px;
         border: 1px solid transparent;
         transition: 0.12s ease;
       }
-
       .links a:hover {
         color: var(--text);
         border-color: rgba(255, 255, 255, 0.18);
         background: rgba(255, 255, 255, 0.04);
       }
-
       .btn {
         display: inline-flex;
         align-items: center;
@@ -156,14 +142,12 @@
         cursor: pointer;
         color: var(--text);
       }
-
       .btn:hover {
         transform: translateY(-1px);
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.22);
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
       }
-
       .btn.primary {
         border-color: rgba(255, 106, 0, 0.55);
         background: linear-gradient(
@@ -173,12 +157,10 @@
         );
         box-shadow: 0 16px 44px rgba(255, 60, 20, 0.2);
       }
-
       .btn.primary:hover {
         filter: saturate(1.06);
         box-shadow: 0 20px 50px rgba(255, 60, 20, 0.3);
       }
-
       .btn.discord {
         border-color: rgba(88, 101, 242, 0.4);
         background: linear-gradient(
@@ -189,7 +171,6 @@
         color: white;
         box-shadow: 0 16px 44px rgba(88, 101, 242, 0.2);
       }
-
       .btn.discord:hover {
         border-color: rgba(88, 101, 242, 0.6);
         background: linear-gradient(
@@ -199,7 +180,6 @@
         );
         box-shadow: 0 20px 50px rgba(88, 101, 242, 0.3);
       }
-
       .btn.logout {
         border-color: rgba(255, 80, 80, 0.4);
         background: linear-gradient(
@@ -210,7 +190,6 @@
         color: white;
         box-shadow: 0 16px 44px rgba(255, 80, 80, 0.2);
       }
-
       .btn.logout:hover {
         border-color: rgba(255, 80, 80, 0.6);
         background: linear-gradient(
@@ -220,7 +199,6 @@
         );
         box-shadow: 0 20px 50px rgba(255, 80, 80, 0.3);
       }
-
       /* User Profile Styles */
       .user-profile {
         display: flex;
@@ -234,12 +212,10 @@
         transition: all 0.2s ease;
         position: relative;
       }
-
       .user-profile:hover {
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.18);
       }
-
       .user-avatar {
         width: 36px;
         height: 36px;
@@ -250,13 +226,11 @@
         position: relative;
         flex-shrink: 0;
       }
-
       .user-avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
-
       .user-avatar.default {
         background: linear-gradient(135deg, var(--fire1), var(--fire2));
         display: flex;
@@ -266,30 +240,25 @@
         font-weight: bold;
         font-size: 16px;
       }
-
       .user-info {
         display: flex;
         flex-direction: column;
         gap: 2px;
       }
-
       .user-name {
         font-weight: 700;
         font-size: 13px;
         color: var(--text);
         white-space: nowrap;
       }
-
       .user-discriminator {
         font-size: 11px;
         color: var(--muted);
         opacity: 0.8;
       }
-
       .user-dropdown {
         position: relative;
       }
-
       .dropdown-menu {
         position: absolute;
         top: calc(100% + 10px);
@@ -307,30 +276,25 @@
         transition: all 0.25s ease;
         z-index: 1000;
       }
-
       .user-dropdown:hover .dropdown-menu {
         opacity: 1;
         visibility: visible;
         transform: translateY(0);
       }
-
       .dropdown-header {
         padding: 10px 12px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: 8px;
       }
-
       .dropdown-header .user-name {
         font-size: 14px;
         color: var(--text);
       }
-
       .dropdown-header .user-email {
         font-size: 11px;
         color: var(--muted);
         margin-top: 2px;
       }
-
       .dropdown-item {
         display: flex;
         align-items: center;
@@ -342,30 +306,25 @@
         transition: all 0.15s ease;
         cursor: pointer;
       }
-
       .dropdown-item:hover {
         background: rgba(255, 255, 255, 0.08);
       }
-
       .dropdown-item i {
         width: 16px;
         text-align: center;
         color: var(--muted);
       }
-
       .dropdown-divider {
         height: 1px;
         background: rgba(255, 255, 255, 0.1);
         margin: 8px 0;
       }
-
       /* Loading animation */
       .loading {
         display: inline-flex;
         align-items: center;
         justify-content: center;
       }
-
       .spinner {
         width: 16px;
         height: 16px;
@@ -374,11 +333,9 @@
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
-
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
-
       /* Hero section remains the same */
       .hero {
         display: grid;
@@ -388,17 +345,14 @@
         align-items: center;
         min-height: 520px;
       }
-
       .headline {
         padding: 26px 6px 10px;
       }
-
       .titleRow {
         display: flex;
         align-items: center;
         gap: 16px;
       }
-
       .bigLogoPH {
         width: 74px;
         height: 74px;
@@ -417,7 +371,6 @@
         background-size: cover;
         background-position: center;
       }
-
       h1 {
         margin: 0;
         font-size: 64px;
@@ -425,14 +378,12 @@
         letter-spacing: -1.2px;
         font-weight: 850;
       }
-
       .grad {
         background: linear-gradient(90deg, var(--fire3), var(--fire2), var(--fire1));
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
       }
-
       .stack {
         margin: 18px 0 22px;
         display: flex;
@@ -443,29 +394,24 @@
         font-weight: 650;
         letter-spacing: -0.2px;
       }
-
       .stack span {
         opacity: 0.95;
       }
-
       .stack span.dim {
         opacity: 0.7;
         font-weight: 600;
       }
-
       .ctaRow {
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
         margin-top: 10px;
       }
-
       .note {
         margin-top: 14px;
         font-size: 12px;
         color: var(--muted);
       }
-
       .visual {
         position: relative;
         height: 520px;
@@ -485,7 +431,6 @@
         box-shadow: var(--shadow);
         overflow: hidden;
       }
-
       .shape {
         position: absolute;
         width: 92px;
@@ -502,7 +447,6 @@
         opacity: 0.95;
         animation: float 8s ease-in-out infinite;
       }
-
       .shape.s1 {
         top: 76px;
         right: 66px;
@@ -510,7 +454,6 @@
         height: 96px;
         animation-delay: -1s;
       }
-
       .shape.s2 {
         top: 210px;
         right: 150px;
@@ -520,7 +463,6 @@
         opacity: 0.85;
         animation-delay: -3s;
       }
-
       .shape.s3 {
         bottom: 92px;
         right: 86px;
@@ -528,7 +470,6 @@
         height: 86px;
         animation-delay: -2s;
       }
-
       .shape.s4 {
         top: 310px;
         right: 58px;
@@ -538,7 +479,6 @@
         opacity: 0.75;
         animation-delay: -4s;
       }
-
       .ember {
         position: absolute;
         width: 14px;
@@ -554,13 +494,11 @@
         opacity: 0.9;
         animation: drift 9s ease-in-out infinite;
       }
-
       .ember.e1 {
         top: 170px;
         left: 90px;
         animation-delay: -2s;
       }
-
       .ember.e2 {
         top: 280px;
         left: 160px;
@@ -569,7 +507,6 @@
         opacity: 0.7;
         animation-delay: -5s;
       }
-
       .ember.e3 {
         top: 120px;
         left: 170px;
@@ -578,7 +515,6 @@
         opacity: 0.8;
         animation-delay: -3s;
       }
-
       .ember.e4 {
         top: 360px;
         left: 110px;
@@ -587,7 +523,6 @@
         opacity: 0.6;
         animation-delay: -7s;
       }
-
       @keyframes float {
         0%,
         100% {
@@ -597,7 +532,6 @@
           transform: translateY(-10px) translateX(6px) rotate(2deg);
         }
       }
-
       @keyframes drift {
         0%,
         100% {
@@ -609,7 +543,6 @@
           opacity: 1;
         }
       }
-
       .footer {
         margin-top: 18px;
         padding-top: 16px;
@@ -622,7 +555,6 @@
         gap: 12px;
         flex-wrap: wrap;
       }
-
       @media (max-width: 980px) {
         .hero {
           grid-template-columns: 1fr;
@@ -635,7 +567,6 @@
           font-size: 54px;
         }
       }
-
       @media (max-width: 740px) {
         .links {
           display: none;
@@ -660,7 +591,6 @@
       }
     </style>
   </head>
-
   <body>
     <div class="wrap">
       <header class="nav">
@@ -668,30 +598,25 @@
           <div class="logoPH" aria-hidden="true"></div>
           <div class="brandName">Ryuuda</div>
         </div>
-
         <nav class="links" aria-label="Navigation">
           <a href="terms-of-service/index.html">Terms-of-Service</a>
           <a href="privacy-policy/index.html">Privacy-Policy</a>
         </nav>
-
         <div id="auth-button-container">
           <!-- Dynamically filled by JavaScript -->
         </div>
       </header>
-
       <main class="hero" id="home">
         <section class="headline">
           <div class="titleRow">
             <div class="bigLogoPH" aria-hidden="true"></div>
             <h1><span class="grad">Ryuuda</span></h1>
           </div>
-
           <div class="stack">
             <span>Multi-purpose Discord Bot.</span>
             <span class="dim">Utility, tools &amp; Fun !</span>
             <span class="dim">Clean & R2U</span>
           </div>
-
           <div class="ctaRow">
             <a
               class="btn primary"
@@ -702,70 +627,142 @@
               Add to Discord
             </a>
           </div>
-
           <div class="note">Dashboard coming soon.. need more users.</div>
         </section>
-
         <aside class="visual" aria-hidden="true">
           <div class="shape s1"></div>
           <div class="shape s2"></div>
           <div class="shape s3"></div>
           <div class="shape s4"></div>
-
           <div class="ember e1"></div>
           <div class="ember e2"></div>
           <div class="ember e3"></div>
           <div class="ember e4"></div>
         </aside>
       </main>
-
       <section id="about" style="margin-top: 18px;">
       </section>
-
       <footer class="footer">
         <div>© <span id="y"></span> Ryuuda & *R2U: Ready to use</div>
       </footer>
     </div>
-
     <script>
       document.getElementById("y").textContent = new Date().getFullYear();
+
+      // Discord OAuth2 Configuration (Implicit Grant Flow - client-side only)
+      const DISCORD_CONFIG = {
+        clientId: '1456640479201595453', // Replace with your actual Discord app client ID
+        redirectUri: window.location.origin + window.location.pathname, // Current page as redirect URI (must match in Discord app settings)
+        scope: 'identify email', // Scopes for user info and email
+        responseType: 'token', // Implicit flow: returns access_token in URL hash
+      };
 
       class DiscordAuth {
         constructor() {
           this.user = null;
-          this.apiBase = '/api'; // Change this to your backend URL in production
+          this.accessToken = null;
           this.init();
         }
 
         async init() {
+          // Parse URL hash for access_token on callback
+          this.parseCallback();
+
+          // Check for stored token
           await this.checkAuth();
+
           this.renderAuthButton();
         }
 
+        parseCallback() {
+          // Clear URL hash to clean up (optional, but good UX)
+          if (window.location.hash) {
+            const hash = window.location.hash.substring(1); // Remove #
+            const params = new URLSearchParams(hash);
+            this.accessToken = params.get('access_token');
+            const tokenType = params.get('token_type');
+            const expiresIn = params.get('expires_in');
+
+            if (this.accessToken && tokenType === 'Bearer') {
+              // Store token temporarily (in memory; for persistence, use localStorage but be cautious with security)
+              sessionStorage.setItem('discord_access_token', this.accessToken);
+              sessionStorage.setItem('discord_token_expires', Date.now() + (parseInt(expiresIn) * 1000));
+
+              // Clean URL
+              window.history.replaceState({}, document.title, window.location.pathname);
+
+              // Fetch user info immediately
+              this.fetchUserInfo();
+            } else {
+              // Handle error
+              const error = params.get('error');
+              const errorDesc = params.get('error_description');
+              if (error) {
+                console.error('OAuth Error:', error, errorDesc);
+                // Optionally show error message to user
+              }
+            }
+          }
+        }
+
         async checkAuth() {
+          const storedToken = sessionStorage.getItem('discord_access_token');
+          const expires = sessionStorage.getItem('discord_token_expires');
+
+          if (storedToken && expires && Date.now() < parseInt(expires)) {
+            this.accessToken = storedToken;
+            await this.fetchUserInfo();
+          } else {
+            // Clear expired token
+            this.clearAuth();
+          }
+        }
+
+        async fetchUserInfo() {
+          if (!this.accessToken) return;
+
           try {
-            const response = await fetch(`${this.apiBase}/auth/user`);
+            const response = await fetch('https://discord.com/api/users/@me', {
+              headers: {
+                'Authorization': `Bearer ${this.accessToken}`,
+              },
+            });
+
             if (response.ok) {
               this.user = await response.json();
+              // Also fetch connections or other info if needed, but keep it simple
+            } else {
+              console.error('Failed to fetch user info:', response.status);
+              this.clearAuth();
             }
           } catch (error) {
-            console.log('Not authenticated');
+            console.error('Auth check error:', error);
+            this.clearAuth();
           }
         }
 
         async login() {
-          // Redirect to Discord OAuth
-          window.location.href = `${this.apiBase}/auth/login`;
+          const authUrl = new URL('https://discord.com/api/oauth2/authorize');
+          authUrl.searchParams.append('client_id', DISCORD_CONFIG.clientId);
+          authUrl.searchParams.append('redirect_uri', encodeURIComponent(DISCORD_CONFIG.redirectUri));
+          authUrl.searchParams.append('response_type', DISCORD_CONFIG.responseType);
+          authUrl.searchParams.append('scope', DISCORD_CONFIG.scope);
+          window.location.href = authUrl.toString();
         }
 
         async logout() {
-          try {
-            await fetch(`${this.apiBase}/auth/logout`);
-            this.user = null;
-            this.renderAuthButton();
-          } catch (error) {
-            console.error('Logout error:', error);
-          }
+          this.clearAuth();
+          // Optionally revoke token on Discord side, but not necessary for implicit flow
+          this.renderAuthButton();
+          // Redirect to clean URL if needed
+          window.location.hash = '';
+        }
+
+        clearAuth() {
+          this.user = null;
+          this.accessToken = null;
+          sessionStorage.removeItem('discord_access_token');
+          sessionStorage.removeItem('discord_token_expires');
         }
 
         getAvatarUrl(userId, avatarHash) {
@@ -773,27 +770,22 @@
           return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=256`;
         }
 
-        getBannerUrl(userId, bannerHash) {
-          if (!bannerHash) return null;
-          return `https://cdn.discordapp.com/banners/${userId}/${bannerHash}.png?size=600`;
-        }
-
         renderAuthButton() {
           const container = document.getElementById('auth-button-container');
-          
+         
           if (this.user) {
             // User is logged in - show profile
             const avatarUrl = this.getAvatarUrl(this.user.id, this.user.avatar);
             const displayName = this.user.global_name || this.user.username;
-            const discriminator = this.user.discriminator && this.user.discriminator !== '0' 
-              ? `#${this.user.discriminator}` 
+            const discriminator = this.user.discriminator && this.user.discriminator !== '0'
+              ? `#${this.user.discriminator}`
               : '';
-            
+           
             container.innerHTML = `
               <div class="user-dropdown">
                 <div class="user-profile">
                   <div class="user-avatar ${avatarUrl ? '' : 'default'}">
-                    ${avatarUrl 
+                    ${avatarUrl
                       ? `<img src="${avatarUrl}" alt="${displayName}" onerror="this.style.display='none';this.parentElement.classList.add('default');this.parentElement.textContent='${displayName.charAt(0).toUpperCase()}'">`
                       : displayName.charAt(0).toUpperCase()
                     }
@@ -841,6 +833,11 @@
         if (e.key === 'discord_auth_state') {
           auth.checkAuth().then(() => auth.renderAuthButton());
         }
+      });
+
+      // Handle page load for immediate callback parsing
+      window.addEventListener('load', () => {
+        auth.parseCallback();
       });
     </script>
   </body>
