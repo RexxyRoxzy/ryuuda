@@ -646,25 +646,18 @@
         <div>© <span id="y"></span> Ryuuda & *R2U: Ready to use</div>
       </footer>
     </div>
-    <script type="module">
+    <script>
       document.getElementById("y").textContent = new Date().getFullYear();
 
-      // Expose auth globally for event handlers (safe for this single-page app)
+      // Expose auth globally for event handlers
       window.auth = null;
 
-      // Discord OAuth2 PKCE Configuration
+      // Discord Implicit Grant Configuration (client-side safe)
       const DISCORD_CONFIG = {
         clientId: '1456640479201595453',
-        redirectUri: 'https://ryuuda.vercel.app/',
+        redirectUri: 'https://ryuuda.vercel.app', // Matches your exact URL (no trailing /)
         scope: 'identify email',
-      };
-
-      // Helper: base64url-encode (no padding)
-      const base64url = (str) => {
-        return btoa(String(str))
-          .replace(/=/g, '')
-          .replace(/\+/g, '-')
-          .replace(/\//g, '_');
+        responseType: 'token', // Implicit flow: token direct in hash
       };
 
       class DiscordAuth {
@@ -675,115 +668,44 @@
         }
 
         async init() {
-          // Handle callback if code is in URL
-          await this.handleCallback();
+          // Parse URL hash for access_token on callback
+          this.parseCallback();
 
           // Check for stored token
           await this.checkAuth();
 
           this.renderAuthButton();
-          window.auth = this; // Set global reference after init
+          window.auth = this; // Global reference
         }
 
-        // 1. Generate PKCE pair
-        async generatePKCE() {
-          const encoder = new TextEncoder();
-          const random = crypto.getRandomValues(new Uint8Array(32));
-          const codeVerifier = base64url(String.fromCharCode(...random));
-          // SHA-256 hash → base64url
-          const challengeBuf = await crypto.subtle.digest(
-            'SHA-256',
-            encoder.encode(codeVerifier)
-          );
-          const codeChallenge = base64url(String.fromCharCode(...new Uint8Array(challengeBuf)));
-          return { codeVerifier, codeChallenge };
-        }
+        parseCallback() {
+          if (window.location.hash) {
+            const hash = window.location.hash.substring(1); // Remove #
+            const params = new URLSearchParams(hash);
+            this.accessToken = params.get('access_token');
+            const tokenType = params.get('token_type');
+            const expiresIn = params.get('expires_in');
 
-        // 2. Build the authorization URL
-        async login() {
-          const { codeVerifier, codeChallenge } = await this.generatePKCE();
-          const params = new URLSearchParams({
-            response_type: 'code',
-            client_id: DISCORD_CONFIG.clientId,
-            redirect_uri: DISCORD_CONFIG.redirectUri,
-            scope: DISCORD_CONFIG.scope,
-            state: crypto.randomUUID(),
-            code_challenge: codeChallenge,
-            code_challenge_method: 'S256',
-            prompt: 'consent'
-          });
+            if (this.accessToken && tokenType === 'Bearer') {
+              // Store token
+              sessionStorage.setItem('discord_access_token', this.accessToken);
+              sessionStorage.setItem('discord_token_expires', Date.now() + (parseInt(expiresIn) * 1000));
 
-          // Store verifier & state
-          sessionStorage.setItem('pkce_verifier', codeVerifier);
-          sessionStorage.setItem('oauth_state', params.get('state'));
+              // Clean URL (remove hash)
+              window.history.replaceState({}, document.title, window.location.pathname);
 
-          const authUrl = `https://discord.com/oauth2/authorize?${params.toString()}`;
-          window.location.href = authUrl;
-        }
-
-        // 3. Handle callback & exchange code for token
-        async handleCallback() {
-          const urlParams = new URLSearchParams(window.location.search);
-          const code = urlParams.get('code');
-          const state = urlParams.get('state');
-          const error = urlParams.get('error');
-
-          if (error) {
-            console.error('OAuth Error:', error, urlParams.get('error_description'));
-            this.clearUrl();
-            return;
-          }
-
-          if (code) {
-            const storedState = sessionStorage.getItem('oauth_state');
-            if (state !== storedState) {
-              console.error('State mismatch');
-              this.clearUrl();
-              return;
-            }
-
-            const codeVerifier = sessionStorage.getItem('pkce_verifier');
-            if (!codeVerifier) {
-              console.error('PKCE verifier missing');
-              this.clearUrl();
-              return;
-            }
-
-            try {
-              const tokenResponse = await fetch('https://discord.com/api/oauth2/token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                  grant_type: 'authorization_code',
-                  client_id: DISCORD_CONFIG.clientId,
-                  code,
-                  redirect_uri: DISCORD_CONFIG.redirectUri,
-                  code_verifier: codeVerifier
-                })
-              });
-
-              const tokenData = await tokenResponse.json();
-              if (tokenData.access_token) {
-                this.accessToken = tokenData.access_token;
-                sessionStorage.setItem('discord_access_token', this.accessToken);
-                sessionStorage.setItem('discord_token_expires', Date.now() + (tokenData.expires_in * 1000));
-                await this.fetchUserInfo();
-              } else {
-                console.error('Token exchange failed:', tokenData);
+              // Fetch user info
+              this.fetchUserInfo();
+            } else {
+              // Handle error
+              const error = params.get('error');
+              const errorDesc = params.get('error_description');
+              if (error) {
+                console.error('OAuth Error:', error, errorDesc);
+                // Optionally show toast/error UI
               }
-            } catch (err) {
-              console.error('Token exchange error:', err);
-            } finally {
-              // Clean up
-              sessionStorage.removeItem('pkce_verifier');
-              sessionStorage.removeItem('oauth_state');
-              this.clearUrl();
             }
           }
-        }
-
-        clearUrl() {
-          window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         async checkAuth() {
@@ -820,10 +742,22 @@
           }
         }
 
-        async logout() {
+        login() {
+          const params = new URLSearchParams({
+            client_id: DISCORD_CONFIG.clientId,
+            redirect_uri: DISCORD_CONFIG.redirectUri,
+            response_type: DISCORD_CONFIG.responseType,
+            scope: DISCORD_CONFIG.scope,
+          });
+
+          const authUrl = `https://discord.com/oauth2/authorize?${params.toString()}`;
+          window.location.href = authUrl;
+        }
+
+        logout() {
           this.clearAuth();
           this.renderAuthButton();
-          this.clearUrl();
+          window.location.hash = ''; // Clear any lingering hash
         }
 
         clearAuth() {
@@ -842,7 +776,6 @@
           const container = document.getElementById('auth-button-container');
          
           if (this.user) {
-            // User is logged in - show profile
             const avatarUrl = this.getAvatarUrl(this.user.id, this.user.avatar);
             const displayName = this.user.global_name || this.user.username;
             const discriminator = this.user.discriminator && this.user.discriminator !== '0'
@@ -882,7 +815,7 @@
               </div>
             `;
 
-            // Attach event listeners after rendering
+            // Event listeners
             document.getElementById('view-profile-btn').addEventListener('click', () => {
               window.open(`https://discord.com/users/${this.user.id}`, '_blank');
             });
@@ -891,7 +824,6 @@
             });
 
           } else {
-            // User is not logged in - show login button
             container.innerHTML = `
               <button class="btn discord" id="login-btn">
                 <i class="fab fa-discord"></i>
@@ -899,7 +831,6 @@
               </button>
             `;
 
-            // Attach event listener after rendering
             document.getElementById('login-btn').addEventListener('click', () => {
               this.login();
             });
@@ -907,13 +838,13 @@
         }
       }
 
-      // Initialize auth system
+      // Initialize
       const authInstance = new DiscordAuth();
 
-      // Listen for storage events (multi-tab sync)
+      // Multi-tab sync
       window.addEventListener('storage', (e) => {
         if (e.key && e.key.startsWith('discord_')) {
-          location.reload(); // Simple reload for sync
+          location.reload();
         }
       });
     </script>
