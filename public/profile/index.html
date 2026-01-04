@@ -17,7 +17,7 @@
         --fire1: #ff2a1a;
         --fire2: #ff6a00;
         --fire3: #ffd000;
-        --shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Lighter shadow */
         --radius: 18px;
         --max: 1120px;
         --discord-blurple: #5865F2;
@@ -29,28 +29,10 @@
       html,
       body {
         height: 100%;
-      }
-      body {
         margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-          Helvetica, Arial;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
         color: var(--text);
-        background: radial-gradient(
-            900px 520px at 18% 10%,
-            rgba(255, 106, 0, 0.14),
-            transparent 60%
-          ),
-          radial-gradient(
-            900px 520px at 80% 28%,
-            rgba(255, 42, 26, 0.12),
-            transparent 62%
-          ),
-          radial-gradient(
-            900px 520px at 50% 92%,
-            rgba(255, 208, 0, 0.08),
-            transparent 58%
-          ),
-          linear-gradient(180deg, var(--bg1), var(--bg0));
+        background: linear-gradient(180deg, var(--bg1), var(--bg0)); /* Simplified background - no heavy radials */
         overflow-x: hidden;
       }
       a {
@@ -69,11 +51,7 @@
         gap: 16px;
         padding: 14px 16px;
         border: 1px solid var(--line);
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.06),
-          rgba(255, 255, 255, 0.03)
-        );
+        background: rgba(255, 255, 255, 0.05); /* Simplified bg */
         border-radius: 999px;
         box-shadow: var(--shadow);
         backdrop-filter: blur(10px);
@@ -96,13 +74,8 @@
         height: 34px;
         border-radius: 12px;
         border: 1px solid rgba(255, 255, 255, 0.14);
-        background: radial-gradient(
-          circle at 30% 30%,
-          rgba(255, 208, 0, 0.22),
-          rgba(255, 106, 0, 0.16),
-          rgba(255, 42, 26, 0.1)
-        );
-        box-shadow: 0 18px 38px rgba(255, 70, 20, 0.18);
+        background: linear-gradient(135deg, var(--fire1), var(--fire2)); /* Simplified */
+        box-shadow: 0 4px 12px rgba(255, 70, 20, 0.2); /* Lighter */
         overflow: hidden;
       }
       .links {
@@ -116,7 +89,7 @@
         padding: 10px 10px;
         border-radius: 999px;
         border: 1px solid transparent;
-        transition: 0.12s ease;
+        transition: all 0.12s ease;
       }
       .links a:hover {
         color: var(--text);
@@ -143,80 +116,182 @@
         transform: translateY(-1px);
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.22);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* Lighter */
       }
       .btn.primary {
         border-color: rgba(255, 106, 0, 0.55);
-        background: linear-gradient(
-          135deg,
-          rgba(255, 42, 26, 0.95),
-          rgba(255, 106, 0, 0.95)
-        );
-        box-shadow: 0 16px 44px rgba(255, 60, 20, 0.2);
+        background: linear-gradient(135deg, rgba(255, 42, 26, 0.95), rgba(255, 106, 0, 0.95));
+        box-shadow: 0 8px 24px rgba(255, 60, 20, 0.2); /* Lighter */
+        color: white;
       }
       .btn.primary:hover {
         filter: saturate(1.06);
-        box-shadow: 0 20px 50px rgba(255, 60, 20, 0.3);
+        box-shadow: 0 12px 32px rgba(255, 60, 20, 0.3);
       }
       .btn.discord {
         border-color: rgba(255, 106, 0, 0.4);
-        background: linear-gradient(
-          135deg,
-          rgba(255, 42, 26, 0.95),
-          rgba(255, 106, 0, 0.95)
-        );
+        background: linear-gradient(135deg, rgba(255, 42, 26, 0.95), rgba(255, 106, 0, 0.95));
         color: white;
-        box-shadow: 0 16px 44px rgba(255, 60, 20, 0.2);
+        box-shadow: 0 8px 24px rgba(255, 60, 20, 0.2);
       }
       .btn.discord:hover {
         border-color: rgba(255, 106, 0, 0.6);
-        background: linear-gradient(
-          135deg,
-          rgba(255, 42, 26, 1),
-          rgba(255, 106, 0, 1)
-        );
-        box-shadow: 0 20px 50px rgba(255, 60, 20, 0.3);
+        background: linear-gradient(135deg, rgba(255, 42, 26, 1), rgba(255, 106, 0, 1));
+        box-shadow: 0 12px 32px rgba(255, 60, 20, 0.3);
       }
       .btn.logout {
         border-color: rgba(255, 80, 80, 0.4);
-        background: linear-gradient(
-          135deg,
-          rgba(255, 80, 80, 0.95),
-          rgba(255, 120, 120, 0.95)
-        );
+        background: linear-gradient(135deg, rgba(255, 80, 80, 0.95), rgba(255, 120, 120, 0.95));
         color: white;
-        box-shadow: 0 16px 44px rgba(255, 80, 80, 0.2);
+        box-shadow: 0 8px 24px rgba(255, 80, 80, 0.2);
       }
       .btn.logout:hover {
         border-color: rgba(255, 80, 80, 0.6);
-        background: linear-gradient(
-          135deg,
-          rgba(255, 80, 80, 1),
-          rgba(255, 120, 120, 1)
-        );
-        box-shadow: 0 20px 50px rgba(255, 80, 80, 0.3);
+        background: linear-gradient(135deg, rgba(255, 80, 80, 1), rgba(255, 120, 120, 1));
+        box-shadow: 0 12px 32px rgba(255, 80, 80, 0.3);
       }
-      /* Profile-specific styles */
+      /* User Profile Styles - Simplified */
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 14px 6px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        transition: all 0.2s ease;
+        position: relative;
+      }
+      .user-profile:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: var(--bg1);
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .user-avatar.default {
+        background: linear-gradient(135deg, var(--fire1), var(--fire2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+      }
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .user-name {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--text);
+        white-space: nowrap;
+      }
+      .user-discriminator {
+        font-size: 11px;
+        color: var(--muted);
+        opacity: 0.8;
+      }
+      .user-dropdown {
+        position: relative;
+      }
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        min-width: 200px;
+        background: rgba(20, 20, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow); /* Use lighter shadow */
+        padding: 12px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.25s ease;
+        z-index: 1000;
+      }
+      .user-dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .dropdown-header {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 8px;
+      }
+      .dropdown-header .user-name {
+        font-size: 14px;
+        color: var(--text);
+      }
+      .dropdown-header .user-email {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 13px;
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+      .dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .dropdown-item i {
+        width: 16px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .dropdown-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 8px 0;
+      }
+      /* Profile-specific styles - Optimized */
       .profile-hero {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 32px;
+        gap: 24px; /* Reduced gap */
         margin-top: 22px;
-        padding: 60px 20px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        padding: 40px 20px; /* Reduced padding */
+        background: rgba(255, 255, 255, 0.03); /* Simpler bg */
         border-radius: var(--radius);
         border: 1px solid var(--line);
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow); /* Lighter */
       }
       .profile-avatar {
-        width: 140px;
-        height: 140px;
+        width: 120px; /* Smaller for faster load */
+        height: 120px;
         border-radius: 50%;
-        border: 3px solid rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.2);
         background: var(--bg1);
         overflow: hidden;
         position: relative;
+        will-change: transform; /* Optimize for GPU */
       }
       .profile-avatar img {
         width: 100%;
@@ -230,27 +305,27 @@
         justify-content: center;
         color: white;
         font-weight: bold;
-        font-size: 48px;
+        font-size: 40px; /* Adjusted */
       }
       .profile-info {
         text-align: center;
-        gap: 12px;
+        gap: 8px; /* Reduced */
         display: flex;
         flex-direction: column;
       }
       .profile-name {
-        font-size: 36px;
+        font-size: 32px; /* Slightly smaller */
         font-weight: 850;
         line-height: 1.1;
         margin: 0;
       }
       .profile-tag {
-        font-size: 18px;
+        font-size: 16px;
         color: var(--muted);
-        margin: 4px 0 0;
+        margin: 0;
       }
       .profile-email {
-        font-size: 16px;
+        font-size: 14px;
         color: var(--text);
         opacity: 0.8;
       }
@@ -259,15 +334,15 @@
         gap: 12px;
         flex-wrap: wrap;
         justify-content: center;
-        margin-top: 24px;
+        margin-top: 20px;
       }
       .not-logged-in {
         text-align: center;
-        padding: 60px 20px;
+        padding: 40px 20px; /* Reduced */
       }
       .not-logged-in h2 {
-        font-size: 28px;
-        margin-bottom: 16px;
+        font-size: 24px; /* Smaller */
+        margin-bottom: 12px;
         color: var(--muted);
       }
       .footer {
@@ -283,9 +358,10 @@
         flex-wrap: wrap;
       }
       @media (max-width: 740px) {
-        .profile-name { font-size: 28px; }
-        .profile-avatar { width: 100px; height: 100px; font-size: 36px; }
+        .profile-name { font-size: 24px; }
+        .profile-avatar { width: 80px; height: 80px; font-size: 28px; }
         .links { display: none; }
+        .profile-hero { padding: 30px 16px; gap: 16px; }
       }
     </style>
   </head>
