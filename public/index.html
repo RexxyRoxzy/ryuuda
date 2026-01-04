@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#ff3b1a" />
-    <title>Ryuuda - Bot</title>
+    <title>Ryuuda — Discord Bot</title>
     <meta
       name="description"
       content="Ryuuda"
@@ -162,23 +162,23 @@
         box-shadow: 0 20px 50px rgba(255, 60, 20, 0.3);
       }
       .btn.discord {
-        border-color: rgba(88, 101, 242, 0.4);
+        border-color: rgba(255, 106, 0, 0.4);
         background: linear-gradient(
           135deg,
-          rgba(88, 101, 242, 0.95),
-          rgba(108, 118, 255, 0.95)
+          rgba(255, 42, 26, 0.95),
+          rgba(255, 106, 0, 0.95)
         );
         color: white;
-        box-shadow: 0 16px 44px rgba(88, 101, 242, 0.2);
+        box-shadow: 0 16px 44px rgba(255, 60, 20, 0.2);
       }
       .btn.discord:hover {
-        border-color: rgba(88, 101, 242, 0.6);
+        border-color: rgba(255, 106, 0, 0.6);
         background: linear-gradient(
           135deg,
-          rgba(88, 101, 242, 1),
-          rgba(108, 118, 255, 1)
+          rgba(255, 42, 26, 1),
+          rgba(255, 106, 0, 1)
         );
-        box-shadow: 0 20px 50px rgba(88, 101, 242, 0.3);
+        box-shadow: 0 20px 50px rgba(255, 60, 20, 0.3);
       }
       .btn.logout {
         border-color: rgba(255, 80, 80, 0.4);
@@ -649,6 +649,9 @@
     <script type="module">
       document.getElementById("y").textContent = new Date().getFullYear();
 
+      // Expose auth globally for event handlers (safe for this single-page app)
+      window.auth = null;
+
       // Discord OAuth2 PKCE Configuration
       const DISCORD_CONFIG = {
         clientId: '1456640479201595453',
@@ -679,6 +682,7 @@
           await this.checkAuth();
 
           this.renderAuthButton();
+          window.auth = this; // Set global reference after init
         }
 
         // 1. Generate PKCE pair
@@ -865,32 +869,46 @@
                     <div class="user-name">${displayName}</div>
                     ${this.user.email ? `<div class="user-email">${this.user.email}</div>` : ''}
                   </div>
-                  <div class="dropdown-item" onclick="window.open('https://discord.com/users/${auth.user.id}', '_blank')">
+                  <div class="dropdown-item" id="view-profile-btn">
                     <i class="fas fa-user"></i>
                     <span>View Profile</span>
                   </div>
                   <div class="dropdown-divider"></div>
-                  <div class="dropdown-item logout" onclick="auth.logout()">
+                  <div class="dropdown-item logout" id="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Log Out</span>
                   </div>
                 </div>
               </div>
             `;
+
+            // Attach event listeners after rendering
+            document.getElementById('view-profile-btn').addEventListener('click', () => {
+              window.open(`https://discord.com/users/${this.user.id}`, '_blank');
+            });
+            document.getElementById('logout-btn').addEventListener('click', () => {
+              this.logout();
+            });
+
           } else {
             // User is not logged in - show login button
             container.innerHTML = `
-              <button class="btn discord" onclick="auth.login()">
+              <button class="btn discord" id="login-btn">
                 <i class="fab fa-discord"></i>
                 Login with Discord
               </button>
             `;
+
+            // Attach event listener after rendering
+            document.getElementById('login-btn').addEventListener('click', () => {
+              this.login();
+            });
           }
         }
       }
 
       // Initialize auth system
-      const auth = new DiscordAuth();
+      const authInstance = new DiscordAuth();
 
       // Listen for storage events (multi-tab sync)
       window.addEventListener('storage', (e) => {
