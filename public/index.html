@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#ff3b1a" />
-    <title>Ryuuda</title>
+    <title>Ryuuda — Discord Bot</title>
     <meta
       name="description"
       content="Ryuuda"
@@ -806,6 +806,10 @@
                     <i class="fas fa-user"></i>
                     <span>View Profile</span>
                   </div>
+                  <div class="dropdown-item" id="dashboard-profile-btn">
+                    <i class="fas fa-id-card"></i>
+                    <span>Dashboard Profile</span>
+                  </div>
                   <div class="dropdown-divider"></div>
                   <div class="dropdown-item logout" id="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
@@ -818,6 +822,9 @@
             // Event listeners
             document.getElementById('view-profile-btn').addEventListener('click', () => {
               window.open(`https://discord.com/users/${this.user.id}`, '_blank');
+            });
+            document.getElementById('dashboard-profile-btn').addEventListener('click', () => {
+              window.location.href = '/profile/';
             });
             document.getElementById('logout-btn').addEventListener('click', () => {
               this.logout();
