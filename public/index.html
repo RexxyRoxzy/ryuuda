@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#ff3b1a" />
+    <title>Ryuuda — Discord Bot</title>
+    <meta
+      name="description"
+      content="Ryuuda"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+      :root {
+        --bg0: #07060a;
+        --bg1: #0a0810;
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.7);
+        --line: rgba(255, 255, 255, 0.1);
+        --fire1: #ff2a1a;
+        --fire2: #ff6a00;
+        --fire3: #ffd000;
+        --shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+        --radius: 18px;
+        --max: 1120px;
+        --discord-blurple: #5865F2;
+        --discord-green: #57F287;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial;
+        color: var(--text);
+        background: radial-gradient(
+            900px 520px at 18% 10%,
+            rgba(255, 106, 0, 0.14),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 520px at 80% 28%,
+            rgba(255, 42, 26, 0.12),
+            transparent 62%
+          ),
+          radial-gradient(
+            900px 520px at 50% 92%,
+            rgba(255, 208, 0, 0.08),
+            transparent 58%
+          ),
+          linear-gradient(180deg, var(--bg1), var(--bg0));
+        overflow-x: hidden;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 22px 18px 70px;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.03)
+        );
+        border-radius: 999px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+        position: sticky;
+        top: 14px;
+        z-index: 10;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 20px;
+      }
+
+      .brandName {
+        font-weight: 750;
+        letter-spacing: 0.2px;
+      }
+
+      .logoPH {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(255, 208, 0, 0.22),
+          rgba(255, 106, 0, 0.16),
+          rgba(255, 42, 26, 0.1)
+        );
+        box-shadow: 0 18px 38px rgba(255, 70, 20, 0.18);
+        overflow: hidden;
+      }
+
+      .links {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .links a {
+        padding: 10px 10px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: 0.12s ease;
+      }
+
+      .links a:hover {
+        color: var(--text);
+        border-color: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.04);
+        font-weight: 700;
+        font-size: 13px;
+        transition: all 0.18s ease;
+        white-space: nowrap;
+        cursor: pointer;
+        color: var(--text);
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.22);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn.primary {
+        border-color: rgba(255, 106, 0, 0.55);
+        background: linear-gradient(
+          135deg,
+          rgba(255, 42, 26, 0.95),
+          rgba(255, 106, 0, 0.95)
+        );
+        box-shadow: 0 16px 44px rgba(255, 60, 20, 0.2);
+      }
+
+      .btn.primary:hover {
+        filter: saturate(1.06);
+        box-shadow: 0 20px 50px rgba(255, 60, 20, 0.3);
+      }
+
+      .btn.discord {
+        border-color: rgba(88, 101, 242, 0.4);
+        background: linear-gradient(
+          135deg,
+          rgba(88, 101, 242, 0.95),
+          rgba(108, 118, 255, 0.95)
+        );
+        color: white;
+        box-shadow: 0 16px 44px rgba(88, 101, 242, 0.2);
+      }
+
+      .btn.discord:hover {
+        border-color: rgba(88, 101, 242, 0.6);
+        background: linear-gradient(
+          135deg,
+          rgba(88, 101, 242, 1),
+          rgba(108, 118, 255, 1)
+        );
+        box-shadow: 0 20px 50px rgba(88, 101, 242, 0.3);
+      }
+
+      .btn.logout {
+        border-color: rgba(255, 80, 80, 0.4);
+        background: linear-gradient(
+          135deg,
+          rgba(255, 80, 80, 0.95),
+          rgba(255, 120, 120, 0.95)
+        );
+        color: white;
+        box-shadow: 0 16px 44px rgba(255, 80, 80, 0.2);
+      }
+
+      .btn.logout:hover {
+        border-color: rgba(255, 80, 80, 0.6);
+        background: linear-gradient(
+          135deg,
+          rgba(255, 80, 80, 1),
+          rgba(255, 120, 120, 1)
+        );
+        box-shadow: 0 20px 50px rgba(255, 80, 80, 0.3);
+      }
+
+      /* User Profile Styles */
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px 14px 6px 6px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .user-profile:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: var(--bg1);
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+      }
+
+      .user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .user-avatar.default {
+        background: linear-gradient(135deg, var(--fire1), var(--fire2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .user-name {
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--text);
+        white-space: nowrap;
+      }
+
+      .user-discriminator {
+        font-size: 11px;
+        color: var(--muted);
+        opacity: 0.8;
+      }
+
+      .user-dropdown {
+        position: relative;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        min-width: 200px;
+        background: rgba(20, 20, 30, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        padding: 12px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.25s ease;
+        z-index: 1000;
+      }
+
+      .user-dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-header {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 8px;
+      }
+
+      .dropdown-header .user-name {
+        font-size: 14px;
+        color: var(--text);
+      }
+
+      .dropdown-header .user-email {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 13px;
+        transition: all 0.15s ease;
+        cursor: pointer;
+      }
+
+      .dropdown-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .dropdown-item i {
+        width: 16px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 8px 0;
+      }
+
+      /* Loading animation */
+      .loading {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-top-color: var(--fire2);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Hero section remains the same */
+      .hero {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 26px;
+        margin-top: 22px;
+        align-items: center;
+        min-height: 520px;
+      }
+
+      .headline {
+        padding: 26px 6px 10px;
+      }
+
+      .titleRow {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .bigLogoPH {
+        width: 74px;
+        height: 74px;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(255, 208, 0, 0.22),
+          rgba(255, 106, 0, 0.16),
+          rgba(255, 42, 26, 0.1)
+        );
+        box-shadow: 0 26px 70px rgba(255, 70, 20, 0.22);
+        overflow: hidden;
+        flex: 0 0 auto;
+        background-image: url("assets/icons/ryuuda-logo.png");
+        background-size: cover;
+        background-position: center;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 64px;
+        line-height: 1.02;
+        letter-spacing: -1.2px;
+        font-weight: 850;
+      }
+
+      .grad {
+        background: linear-gradient(90deg, var(--fire3), var(--fire2), var(--fire1));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .stack {
+        margin: 18px 0 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 22px;
+        font-weight: 650;
+        letter-spacing: -0.2px;
+      }
+
+      .stack span {
+        opacity: 0.95;
+      }
+
+      .stack span.dim {
+        opacity: 0.7;
+        font-weight: 600;
+      }
+
+      .ctaRow {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .note {
+        margin-top: 14px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .visual {
+        position: relative;
+        height: 520px;
+        border-radius: 28px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: radial-gradient(
+            420px 300px at 40% 35%,
+            rgba(255, 106, 0, 0.14),
+            transparent 60%
+          ),
+          radial-gradient(
+            380px 280px at 70% 60%,
+            rgba(255, 42, 26, 0.12),
+            transparent 60%
+          ),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .shape {
+        position: absolute;
+        width: 92px;
+        height: 92px;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(255, 208, 0, 0.24),
+          rgba(255, 106, 0, 0.18),
+          rgba(255, 42, 26, 0.1)
+        );
+        box-shadow: 0 26px 70px rgba(255, 70, 20, 0.16);
+        opacity: 0.95;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      .shape.s1 {
+        top: 76px;
+        right: 66px;
+        width: 96px;
+        height: 96px;
+        animation-delay: -1s;
+      }
+
+      .shape.s2 {
+        top: 210px;
+        right: 150px;
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        opacity: 0.85;
+        animation-delay: -3s;
+      }
+
+      .shape.s3 {
+        bottom: 92px;
+        right: 86px;
+        width: 86px;
+        height: 86px;
+        animation-delay: -2s;
+      }
+
+      .shape.s4 {
+        top: 310px;
+        right: 58px;
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        opacity: 0.75;
+        animation-delay: -4s;
+      }
+
+      .ember {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 999px;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(255, 208, 0, 0.9),
+          rgba(255, 106, 0, 0.75),
+          rgba(255, 42, 26, 0.35)
+        );
+        box-shadow: 0 0 28px rgba(255, 106, 0, 0.26);
+        opacity: 0.9;
+        animation: drift 9s ease-in-out infinite;
+      }
+
+      .ember.e1 {
+        top: 170px;
+        left: 90px;
+        animation-delay: -2s;
+      }
+
+      .ember.e2 {
+        top: 280px;
+        left: 160px;
+        width: 10px;
+        height: 10px;
+        opacity: 0.7;
+        animation-delay: -5s;
+      }
+
+      .ember.e3 {
+        top: 120px;
+        left: 170px;
+        width: 12px;
+        height: 12px;
+        opacity: 0.8;
+        animation-delay: -3s;
+      }
+
+      .ember.e4 {
+        top: 360px;
+        left: 110px;
+        width: 8px;
+        height: 8px;
+        opacity: 0.6;
+        animation-delay: -7s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) translateX(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-10px) translateX(6px) rotate(2deg);
+        }
+      }
+
+      @keyframes drift {
+        0%,
+        100% {
+          transform: translateY(0px);
+          opacity: 0.75;
+        }
+        50% {
+          transform: translateY(-16px);
+          opacity: 1;
+        }
+      }
+
+      .footer {
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      @media (max-width: 980px) {
+        .hero {
+          grid-template-columns: 1fr;
+          min-height: unset;
+        }
+        .visual {
+          height: 420px;
+        }
+        h1 {
+          font-size: 54px;
+        }
+      }
+
+      @media (max-width: 740px) {
+        .links {
+          display: none;
+        }
+        h1 {
+          font-size: 44px;
+        }
+        .stack {
+          font-size: 18px;
+        }
+        .bigLogoPH {
+          width: 64px;
+          height: 64px;
+          border-radius: 22px;
+        }
+        .user-info {
+          display: none;
+        }
+        .user-profile {
+          padding: 6px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <header class="nav">
+        <div class="brand">
+          <div class="logoPH" aria-hidden="true"></div>
+          <div class="brandName">Ryuuda</div>
+        </div>
+
+        <nav class="links" aria-label="Navigation">
+          <a href="terms-of-service/index.html">Terms-of-Service</a>
+          <a href="privacy-policy/index.html">Privacy-Policy</a>
+        </nav>
+
+        <div id="auth-button-container">
+          <!-- Dynamically filled by JavaScript -->
+        </div>
+      </header>
+
+      <main class="hero" id="home">
+        <section class="headline">
+          <div class="titleRow">
+            <div class="bigLogoPH" aria-hidden="true"></div>
+            <h1><span class="grad">Ryuuda</span></h1>
+          </div>
+
+          <div class="stack">
+            <span>Multi-purpose Discord Bot.</span>
+            <span class="dim">Utility, tools &amp; Fun !</span>
+            <span class="dim">Clean & R2U</span>
+          </div>
+
+          <div class="ctaRow">
+            <a
+              class="btn primary"
+              href="https://discord.com/oauth2/authorize?client_id=1456640479201595453&permissions=0&scope=bot%20applications.commands"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Add to Discord
+            </a>
+          </div>
+
+          <div class="note">Dashboard coming soon.. need more users.</div>
+        </section>
+
+        <aside class="visual" aria-hidden="true">
+          <div class="shape s1"></div>
+          <div class="shape s2"></div>
+          <div class="shape s3"></div>
+          <div class="shape s4"></div>
+
+          <div class="ember e1"></div>
+          <div class="ember e2"></div>
+          <div class="ember e3"></div>
+          <div class="ember e4"></div>
+        </aside>
+      </main>
+
+      <section id="about" style="margin-top: 18px;">
+      </section>
+
+      <footer class="footer">
+        <div>© <span id="y"></span> Ryuuda & *R2U: Ready to use</div>
+      </footer>
+    </div>
+
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      class DiscordAuth {
+        constructor() {
+          this.user = null;
+          this.apiBase = '/api'; // Change this to your backend URL in production
+          this.init();
+        }
+
+        async init() {
+          await this.checkAuth();
+          this.renderAuthButton();
+        }
+
+        async checkAuth() {
+          try {
+            const response = await fetch(`${this.apiBase}/auth/user`);
+            if (response.ok) {
+              this.user = await response.json();
+            }
+          } catch (error) {
+            console.log('Not authenticated');
+          }
+        }
+
+        async login() {
+          // Redirect to Discord OAuth
+          window.location.href = `${this.apiBase}/auth/login`;
+        }
+
+        async logout() {
+          try {
+            await fetch(`${this.apiBase}/auth/logout`);
+            this.user = null;
+            this.renderAuthButton();
+          } catch (error) {
+            console.error('Logout error:', error);
+          }
+        }
+
+        getAvatarUrl(userId, avatarHash) {
+          if (!avatarHash) return null;
+          return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=256`;
+        }
+
+        getBannerUrl(userId, bannerHash) {
+          if (!bannerHash) return null;
+          return `https://cdn.discordapp.com/banners/${userId}/${bannerHash}.png?size=600`;
+        }
+
+        renderAuthButton() {
+          const container = document.getElementById('auth-button-container');
+          
+          if (this.user) {
+            // User is logged in - show profile
+            const avatarUrl = this.getAvatarUrl(this.user.id, this.user.avatar);
+            const displayName = this.user.global_name || this.user.username;
+            const discriminator = this.user.discriminator && this.user.discriminator !== '0' 
+              ? `#${this.user.discriminator}` 
+              : '';
+            
+            container.innerHTML = `
+              <div class="user-dropdown">
+                <div class="user-profile">
+                  <div class="user-avatar ${avatarUrl ? '' : 'default'}">
+                    ${avatarUrl 
+                      ? `<img src="${avatarUrl}" alt="${displayName}" onerror="this.style.display='none';this.parentElement.classList.add('default');this.parentElement.textContent='${displayName.charAt(0).toUpperCase()}'">`
+                      : displayName.charAt(0).toUpperCase()
+                    }
+                  </div>
+                  <div class="user-info">
+                    <span class="user-name">${displayName}</span>
+                    ${discriminator ? `<span class="user-discriminator">${discriminator}</span>` : ''}
+                  </div>
+                  <i class="fas fa-chevron-down" style="font-size: 12px; opacity: 0.6;"></i>
+                </div>
+                <div class="dropdown-menu">
+                  <div class="dropdown-header">
+                    <div class="user-name">${displayName}</div>
+                    ${this.user.email ? `<div class="user-email">${this.user.email}</div>` : ''}
+                  </div>
+                  <div class="dropdown-item" onclick="window.open('https://discord.com/users/${this.user.id}', '_blank')">
+                    <i class="fas fa-user"></i>
+                    <span>View Profile</span>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <div class="dropdown-item logout" onclick="auth.logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Log Out</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            // User is not logged in - show login button
+            container.innerHTML = `
+              <button class="btn discord" onclick="auth.login()">
+                <i class="fab fa-discord"></i>
+                Login with Discord
+              </button>
+            `;
+          }
+        }
+      }
+
+      // Initialize auth system
+      const auth = new DiscordAuth();
+
+      // Listen for auth state changes (useful if you have multiple tabs)
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'discord_auth_state') {
+          auth.checkAuth().then(() => auth.renderAuthButton());
+        }
+      });
+    </script>
+  </body>
+</html>
