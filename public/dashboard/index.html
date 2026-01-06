@@ -23,6 +23,11 @@
     .footer-links {
       justify-content: center;
     }
+    .footer {
+      flex-direction: column;
+      text-align: center;
+      gap: 16px;
+    }
     .container { max-width: 1200px; margin: 0 auto; }
     .header {
       display: flex; justify-content: space-between; align-items: center;
@@ -101,9 +106,12 @@
           Loading your servers...
         </div>
       </div>
-      <div class="footer-links">
-        <a href="/">Home</a>
-      </div>
+      <footer class="footer">
+      <div>© <span id="y"></span> Ryuuda | <strong>@neporrex</strong> on discord.</div>
+        <div class="footer-links">
+          <a href="/">Home</a>
+        </div>
+    </footer>
     </main>
   </div>
 
