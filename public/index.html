@@ -813,9 +813,9 @@
               </div>
             `;
 
-            // Event listeners
-            document.getElementById('view-profile-btn').addEventListener('click', () => {
-              window.open(`/profile`);
+               // Event listeners
+              document.getElementById('view-profile-btn').addEventListener('click', () => {
+                window.location.href = `/profile`;
             });
             document.getElementById('logout-btn').addEventListener('click', () => {
               this.logout();
