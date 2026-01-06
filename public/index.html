@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#ff3b1a" />
     <title>Ryuuda</title>
-    <meta
-      name="description"
-      content="Ryuuda"
-    />
+    <meta name="description" content="Ryuuda - Utility & Fun Discord Bot" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
       :root {
@@ -29,14 +26,12 @@
       * {
         box-sizing: border-box;
       }
-      html,
-      body {
+      html, body {
         height: 100%;
       }
       body {
         margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-          Helvetica, Arial;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
         color: var(--text);
         background: radial-gradient(
             900px 520px at 18% 10%,
@@ -336,7 +331,7 @@
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
-      /* Hero section remains the same */
+      /* Hero section */
       .hero {
         display: grid;
         grid-template-columns: 1.25fr 0.75fr;
@@ -413,10 +408,10 @@
         color: var(--muted);
       }
       .news {
-    align-items: center;
-    text-align: center;
-    margin-top: 40px;
-}  
+        align-items: center;
+        text-align: center;
+        margin-top: 40px;
+      }  
       .visual {
         position: relative;
         height: 520px;
@@ -529,8 +524,7 @@
         animation-delay: -7s;
       }
       @keyframes float {
-        0%,
-        100% {
+        0%, 100% {
           transform: translateY(0px) translateX(0px) rotate(0deg);
         }
         50% {
@@ -538,8 +532,7 @@
         }
       }
       @keyframes drift {
-        0%,
-        100% {
+        0%, 100% {
           transform: translateY(0px);
           opacity: 0.75;
         }
@@ -628,18 +621,34 @@
               target="_blank"
               rel="noreferrer"
             >
-              Add to Discord
+              <i class="fas fa-robot"></i> Add to Discord
             </a>
+            <button class="btn" id="dashboard-cta-btn">
+              <i class="fas fa-chart-line"></i> Open Dashboard
+            </button>
           </div>
-          <div class="note">Dashboard coming soon.. need more users.</div>
+          <div class="note">Dashboard is now available! Manage all your servers in one place.</div>
         </section>
         <aside class="visual" aria-hidden="true">
-          <div class="news">News here..</div>
-          <div class="news">credits: @neporrex ! and my friends..</div>
+          <div class="news" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; color: var(--muted);">
+            <h3 style="color: var(--text); margin-bottom: 10px;"><i class="fas fa-star"></i> Dashboard Features</h3>
+            <ul style="text-align: left; list-style: none; padding: 0;">
+              <li><i class="fas fa-check" style="color: var(--discord-green);"></i> View all your Discord servers</li>
+              <li><i class="fas fa-check" style="color: var(--discord-green);"></i> Check bot status per server</li>
+              <li><i class="fas fa-check" style="color: var(--discord-green);"></i> Add bot to servers with one click</li>
+              <li><i class="fas fa-check" style="color: var(--discord-green);"></i> Manage server settings</li>
+            </ul>
+          </div>
+          <div class="shape s1"></div>
+          <div class="shape s2"></div>
+          <div class="shape s3"></div>
+          <div class="shape s4"></div>
+          <div class="ember e1"></div>
+          <div class="ember e2"></div>
+          <div class="ember e3"></div>
+          <div class="ember e4"></div>
         </aside>
       </main>
-      <section id="about" style="margin-top: 18px;">
-      </section>
       <footer class="footer">
         <div>© <span id="y"></span> Ryuuda & *R2U: Ready to use | Contact me here! <strong>@neporrex_</strong> on discord.</div>
       </footer>
@@ -653,7 +662,7 @@
       // Discord Implicit Grant Configuration (client-side safe)
       const DISCORD_CONFIG = {
         clientId: '1456640479201595453',
-        redirectUri: 'https://ryuuda.vercel.app/', // Matches your exact URL (no trailing /)
+        redirectUri: 'https://ryuuda.vercel.app/', // Matches your exact URL
         scope: 'identify guilds',
         responseType: 'token', // Implicit flow: token direct in hash
       };
@@ -673,6 +682,7 @@
           await this.checkAuth();
 
           this.renderAuthButton();
+          this.setupEventListeners();
           window.auth = this; // Global reference
         }
 
@@ -700,7 +710,6 @@
               const errorDesc = params.get('error_description');
               if (error) {
                 console.error('OAuth Error:', error, errorDesc);
-                // Optionally show toast/error UI
               }
             }
           }
@@ -770,6 +779,14 @@
           return `https://cdn.discordapp.com/avatars/${userId}/${avatarHash}.png?size=256`;
         }
 
+        navigateToDashboard() {
+          if (this.user) {
+            window.location.href = '/dashboard/';
+          } else {
+            this.login();
+          }
+        }
+
         renderAuthButton() {
           const container = document.getElementById('auth-button-container');
          
@@ -798,14 +815,15 @@
                 <div class="dropdown-menu">
                   <div class="dropdown-header">
                     <div class="user-name">${displayName}</div>
+                    <div class="user-discriminator">${discriminator}</div>
                   </div>
-                  <div class="dropdown-item" id="view-profile-btn">
-                    <i class="fas fa-user"></i>
-                    <span>View Profile</span>
+                  <div class="dropdown-item" id="dashboard-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
                   </div>
-                   <div class="dropdown-item" id="view-profile-btn">
+                  <div class="dropdown-item" id="profile-btn">
                     <i class="fas fa-user"></i>
-                    <span>View Profile</span>
+                    <span>My Profile</span>
                   </div>
                   <div class="dropdown-divider"></div>
                   <div class="dropdown-item logout" id="logout-btn">
@@ -816,13 +834,15 @@
               </div>
             `;
 
-               // Event listeners
+            // Event listeners for dropdown items
             document.getElementById('dashboard-btn').addEventListener('click', () => {
-            window.location.href = '/dashboard/';
+              this.navigateToDashboard();
             });
-              document.getElementById('view-profile-btn').addEventListener('click', () => {
-                window.location.href = `/profile`;
+            
+            document.getElementById('profile-btn').addEventListener('click', () => {
+              window.location.href = '/profile/';
             });
+            
             document.getElementById('logout-btn').addEventListener('click', () => {
               this.logout();
             });
@@ -837,6 +857,16 @@
 
             document.getElementById('login-btn').addEventListener('click', () => {
               this.login();
+            });
+          }
+        }
+
+        setupEventListeners() {
+          // Dashboard CTA button
+          const dashboardCtaBtn = document.getElementById('dashboard-cta-btn');
+          if (dashboardCtaBtn) {
+            dashboardCtaBtn.addEventListener('click', () => {
+              this.navigateToDashboard();
             });
           }
         }
