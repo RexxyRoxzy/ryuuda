@@ -111,36 +111,55 @@
     };
 
     // Backend API endpoint - YOU NEED TO CREATE THIS!
-    const BACKEND_API = {
-      // You need to create a backend endpoint that checks bot presence
-      // Example: https://your-backend.vercel.app/api/check-bot-presence
-      checkBotPresence: 'https://ryuuda.vercel.app/api/check-bot-presence', // CHANGE THIS!
-      
-      // OR use Discord's API with a bot token (server-side only)
-      // You must create a serverless function on Vercel
-    };
+   // In your dashboard index.html, update these parts:
 
-    class DashboardManager {
-      constructor() {
-        this.user = null;
-        this.accessToken = null;
-        this.guilds = [];
-        this.botUserId = '1456640479201595453';
-        this.botPresenceCache = {};
-        this.init();
-      }
+const BACKEND_API = {
+  checkBotPresence: 'https://ryuuda.vercel.app/api/check-bot-presence',
+  getBotGuilds: 'https://ryuuda.vercel.app/api/bot-guilds'
+};
 
-      async init() {
-        this.parseTokenFromHash();
-        await this.checkAuth();
-        
-        if (this.user && this.accessToken) {
-          this.renderUserProfile();
-          this.fetchUserGuilds();
-        } else {
-          this.showLoginPrompt();
-        }
+async checkBotPresenceForAllGuilds() {
+  const container = document.getElementById('servers-container');
+  
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      Checking bot presence in ${this.guilds.length} servers...
+    </div>
+  `;
+
+  try {
+    // Get ALL guilds where bot is present (more efficient)
+    const response = await fetch(BACKEND_API.getBotGuilds);
+    const data = await response.json();
+    
+    // Create Set for fast lookup
+    const botGuildIds = new Set(data.guilds || []);
+    
+    // Check each of user's guilds
+    for (const guild of this.guilds) {
+      this.botPresenceCache[guild.id] = botGuildIds.has(guild.id);
+    }
+    
+    this.renderServers();
+    
+  } catch (error) {
+    console.error('Failed to get bot guilds:', error);
+    
+    // Fallback: check each guild individually
+    for (const guild of this.guilds) {
+      try {
+        const response = await fetch(`${BACKEND_API.checkBotPresence}?guildId=${guild.id}`);
+        const data = await response.json();
+        this.botPresenceCache[guild.id] = data.botPresent;
+      } catch (err) {
+        this.botPresenceCache[guild.id] = false;
       }
+    }
+    
+    this.renderServers();
+  }
+}
 
       parseTokenFromHash() {
         if (window.location.hash) {
