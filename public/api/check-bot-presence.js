@@ -24,8 +24,15 @@ export default async function handler(req, res) {
   try {
     const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
     
-    // Fetch guild members to check if bot is in guild
-    const response = await fetch(`https://discord.com/api/guilds/${guildId}/members?limit=1`, {
+    if (!BOT_TOKEN) {
+      return res.status(500).json({ 
+        error: 'Bot token not configured',
+        botPresent: false 
+      });
+    }
+    
+    // Fetch guild to check if bot is in guild
+    const response = await fetch(`https://discord.com/api/guilds/${guildId}`, {
       headers: {
         'Authorization': `Bot ${BOT_TOKEN}`,
         'Content-Type': 'application/json'
