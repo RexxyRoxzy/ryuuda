@@ -65,6 +65,13 @@
     }
     .bot-present { background: rgba(87, 242, 135, 0.15); color: #57F287; }
     .bot-absent { background: rgba(255, 80, 80, 0.15); color: #ff5050; }
+    .server-permissions {
+      font-size: 0.8rem; color: var(--muted); margin-top: 8px;
+    }
+    .permission-badge {
+      display: inline-block; padding: 2px 8px; margin-right: 5px;
+      background: rgba(255, 255, 255, 0.05); border-radius: 10px; font-size: 0.75rem;
+    }
   </style>
 </head>
 <body>
@@ -95,12 +102,22 @@
   </div>
 
   <script>
-    // Discord OAuth configuration (same as your main site)
+    // Discord OAuth configuration
     const DISCORD_CONFIG = {
       clientId: '1456640479201595453',
-      redirectUri: 'https://ryuuda.vercel.app/dashboard/', // Make sure this is registered in Discord Dev Portal
+      redirectUri: 'https://ryuuda.vercel.app/dashboard/',
       scope: 'identify guilds',
       responseType: 'token',
+    };
+
+    // Backend API endpoint - YOU NEED TO CREATE THIS!
+    const BACKEND_API = {
+      // You need to create a backend endpoint that checks bot presence
+      // Example: https://your-backend.vercel.app/api/check-bot-presence
+      checkBotPresence: 'https://ryuuda.vercel.app/api/check-bot-presence', // CHANGE THIS!
+      
+      // OR use Discord's API with a bot token (server-side only)
+      // You must create a serverless function on Vercel
     };
 
     class DashboardManager {
@@ -108,7 +125,8 @@
         this.user = null;
         this.accessToken = null;
         this.guilds = [];
-        this.botUserId = '1456640479201595453'; // Your bot's user ID
+        this.botUserId = '1456640479201595453';
+        this.botPresenceCache = {};
         this.init();
       }
 
@@ -174,7 +192,8 @@
               (guild.permissions & 0x20) === 0x20   // MANAGE_GUILD
             );
             
-            this.renderServers();
+            // Now check bot presence for each guild
+            await this.checkBotPresenceForAllGuilds();
           }
         } catch (error) {
           console.error('Failed to fetch guilds:', error);
@@ -188,14 +207,66 @@
         }
       }
 
-      async checkBotInGuild(guildId) {
-        // In a real implementation, you'd call your backend API here
-        // For now, we'll simulate with random results
-        return Math.random() > 0.5; // 50% chance bot is "in" the guild
+      async checkBotPresenceForAllGuilds() {
+        const container = document.getElementById('servers-container');
+        
+        // Show loading state
+        container.innerHTML = `
+          <div class="loading">
+            <div class="spinner" style="width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--fire2); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+            Checking bot presence in ${this.guilds.length} servers...
+          </div>
+        `;
+
+        // Check bot presence for each guild
+        for (const guild of this.guilds) {
+          try {
+            // Option 1: Call your backend API (RECOMMENDED)
+            // const response = await fetch(`${BACKEND_API.checkBotPresence}?guildId=${guild.id}`);
+            // const data = await response.json();
+            // this.botPresenceCache[guild.id] = data.botPresent;
+            
+            // Option 2: Try Discord API directly (limited - only works if bot is in guild)
+            // This will often fail with 403/404 if bot isn't in the guild
+            const botInGuild = await this.checkBotInGuildViaDiscordAPI(guild.id);
+            this.botPresenceCache[guild.id] = botInGuild;
+          } catch (error) {
+            console.log(`Could not check bot presence for ${guild.name}:`, error.message);
+            this.botPresenceCache[guild.id] = false; // Assume bot is not present
+          }
+        }
+        
+        this.renderServers();
+      }
+
+      async checkBotInGuildViaDiscordAPI(guildId) {
+        try {
+          // Try to fetch guild information using Discord's API
+          // Note: This requires the bot to be in the guild AND have necessary permissions
+          const response = await fetch(`https://discord.com/api/guilds/${guildId}`, {
+            headers: {
+              'Authorization': `Bot YOUR_BOT_TOKEN_HERE` // ⚠️ NEVER expose bot token in frontend!
+            }
+          });
+          
+          // If we get a successful response, bot is probably in the guild
+          // But this is SECURITY RISK - bot token should NEVER be in frontend code!
+          return response.ok;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      getPermissionBadges(permissions) {
+        const badges = [];
+        if ((permissions & 0x8) === 0x8) badges.push('Admin');
+        if ((permissions & 0x20) === 0x20) badges.push('Manage Server');
+        if ((permissions & 0x10) === 0x10) badges.push('Manage Roles');
+        if ((permissions & 0x1000) === 0x1000) badges.push('View Channels');
+        return badges.map(badge => `<span class="permission-badge">${badge}</span>`).join('');
       }
 
       renderUserProfile() {
-        // Top-right profile
         const profileContainer = document.getElementById('user-profile-container');
         const avatarUrl = this.user.avatar 
           ? `https://cdn.discordapp.com/avatars/${this.user.id}/${this.user.avatar}.png?size=80`
@@ -215,7 +286,6 @@
           </div>
         `;
 
-        // Main user info section
         const userInfoSection = document.getElementById('user-info-section');
         userInfoSection.innerHTML = `
           <div style="background: var(--card-bg); border-radius: var(--radius); padding: 25px; border: 1px solid var(--line);">
@@ -225,7 +295,6 @@
               <div>
                 <h2 style="font-size: 1.8rem;">${this.user.global_name || this.user.username}</h2>
                 <p style="color: var(--muted);">${this.user.username}#${this.user.discriminator} • ID: ${this.user.id}</p>
-                ${this.user.email ? `<p style="color: var(--muted); margin-top: 5px;"><i class="fas fa-envelope"></i> ${this.user.email}</p>` : ''}
               </div>
             </div>
             <div style="display: flex; gap: 15px;">
@@ -233,12 +302,16 @@
                 <div style="font-size: 2rem; font-weight: bold; color: var(--fire2);">${this.guilds.length}</div>
                 <div style="color: var(--muted);">Manageable Servers</div>
               </div>
+              <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: var(--radius); flex: 1;">
+                <div style="font-size: 2rem; font-weight: bold; color: #57F287;">${Object.values(this.botPresenceCache).filter(Boolean).length}</div>
+                <div style="color: var(--muted);">Servers with Bot</div>
+              </div>
             </div>
           </div>
         `;
       }
 
-      async renderServers() {
+      renderServers() {
         const container = document.getElementById('servers-container');
         
         if (this.guilds.length === 0) {
@@ -258,15 +331,16 @@
         let serversHTML = '<div class="servers-grid">';
         
         for (const guild of this.guilds) {
-          const botInGuild = await this.checkBotInGuild(guild.id);
+          const botInGuild = this.botPresenceCache[guild.id] || false;
           const iconUrl = guild.icon 
             ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png?size=128`
             : null;
+          const permissionBadges = this.getPermissionBadges(guild.permissions);
           
           serversHTML += `
             <div class="server-card">
               <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                ${iconUrl ? `<img src="${iconUrl}" class="server-icon" alt="${guild.name}">` : 
+                ${iconUrl ? `<img src="${iconUrl}" class="server-icon" alt="${guild.name}" onerror="this.style.display='none';this.parentElement.innerHTML+='<div class=\\'server-icon\\' style=\\'background: linear-gradient(135deg, var(--fire1), var(--fire2)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: bold;\\'>${guild.name.charAt(0).toUpperCase()}</div>'">` : 
                   `<div class="server-icon" style="background: linear-gradient(135deg, var(--fire1), var(--fire2)); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: bold;">${guild.name.charAt(0).toUpperCase()}</div>`}
                 <div>
                   <div class="server-name">${guild.name}</div>
@@ -280,15 +354,16 @@
               <div class="server-info">
                 <div><i class="fas fa-id-card"></i> ID: ${guild.id}</div>
                 <div><i class="fas fa-crown"></i> Owner: ${guild.owner ? 'Yes' : 'No'}</div>
+                ${permissionBadges ? `<div class="server-permissions">Permissions: ${permissionBadges}</div>` : ''}
               </div>
               
               ${botInGuild ? 
-                `<button class="btn btn-secondary" style="width: 100%;">
+                `<button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="alert('Server settings coming soon!')">
                    <i class="fas fa-cog"></i> Manage Settings
                  </button>` :
                 `<a href="https://discord.com/oauth2/authorize?client_id=${this.botUserId}&scope=bot&permissions=8&guild_id=${guild.id}" 
-                   target="_blank" class="btn btn-primary" style="width: 100%;">
-                   <i class="fas fa-robot"></i> Add to Server
+                   target="_blank" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                   <i class="fas fa-robot"></i> Add Bot to Server
                  </a>`
               }
             </div>
@@ -335,7 +410,7 @@
 
     // Initialize dashboard
     const dashboard = new DashboardManager();
-    window.dashboard = dashboard; // Make it globally accessible
+    window.dashboard = dashboard;
   </script>
 </body>
 </html>
