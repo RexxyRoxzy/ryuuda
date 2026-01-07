@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/dashboard/server/:serverId",
-      "destination": "/public/dashboard/server/index.html"
+      "source": "/dashboard/server/:id",
+      "destination": "/dashboard/server/index.html"
     }
   ]
 }
