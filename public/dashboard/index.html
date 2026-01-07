@@ -323,7 +323,6 @@
               <p style="color: var(--muted);">${this.user.username}#${this.user.discriminator} • ID: ${this.user.id}</p>
             </div>
           </div>
-          </div>
         </div>
       `;
     }
@@ -375,12 +374,12 @@
             </div>
             
             ${botInGuild ? 
-              `<button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" onclick="alert('Server settings coming soon!')">
-                 <i class="fas fa-cog"></i> Manage Settings
-               </button>` :
+              `<a href="/dashboard/server/${guild.id}" class="btn btn-secondary" style="width: 100%; margin-top: 10px; display: block; text-align: center; text-decoration: none;">
+                 <i class="fas fa-cog"></i> Manage Server
+               </a>` :
               `<a href="https://discord.com/oauth2/authorize?client_id=${this.botUserId}&scope=bot&permissions=8&guild_id=${guild.id}" 
-                 target="_blank" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-                Add Bot to Server
+                 target="_blank" class="btn btn-primary" style="width: 100%; margin-top: 10px; display: block; text-align: center; text-decoration: none;">
+                 <i class="fas fa-robot"></i> Add Bot to Server
                </a>`
             }
           </div>
