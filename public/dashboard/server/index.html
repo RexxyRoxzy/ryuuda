@@ -500,40 +500,115 @@
             }
 
             async loadSettings() {
-                // Load settings from your backend
-                try {
-                    const response = await fetch(`/api/server-settings?guildId=${this.serverId}`);
-                    if (response.ok) {
-                        this.settings = await response.json();
-                        this.applySettings();
-                    }
-                } catch (error) {
-                    console.log('No saved settings found, using defaults');
-                }
-            }
+  try {
+    const response = await fetch(`/api/server-settings-bulk?guildId=${this.serverId}`);
+    if (response.ok) {
+      this.settings = await response.json();
+      this.applySettings();
+    }
+  } catch (error) {
+    console.log('Loading default settings:', error.message);
+    this.settings = this.getDefaultSettings();
+    this.applySettings();
+  }
+}
+
+getDefaultSettings() {
+  return {
+    guild_id: this.serverId,
+    prefix: '!',
+    welcome_enabled: true,
+    welcome_message: 'Welcome {user} to {server}! 👋',
+    economy_enabled: true,
+    leveling_enabled: true,
+    images_enabled: true,
+    mod_spam: true,
+    mod_links: true,
+    mod_mentions: false,
+    is_default: true
+  };
+}
 
             applySettings() {
-                // Apply loaded settings to form elements
-                setTimeout(() => {
-                    if (this.settings.prefix) {
-                        const prefixInput = document.getElementById('prefix');
-                        if (prefixInput) prefixInput.value = this.settings.prefix;
-                    }
-                }, 500);
-            }
+  setTimeout(() => {
+    // Apply all settings to form elements
+    const settings = this.settings;
+    
+    // Text inputs
+    if (settings.prefix && document.getElementById('prefix')) {
+      document.getElementById('prefix').value = settings.prefix;
+    }
+    
+    if (settings.welcome_message && document.getElementById('welcome_message')) {
+      document.getElementById('welcome_message').value = settings.welcome_message;
+    }
+    
+    if (settings.bot_nickname && document.getElementById('bot_nickname')) {
+      document.getElementById('bot_nickname').value = settings.bot_nickname;
+    }
+    
+    // Toggle switches
+    const toggleIds = [
+      'welcome_enabled',
+      'economy_enabled', 
+      'leveling_enabled',
+      'images_enabled',
+      'mod_spam',
+      'mod_links',
+      'mod_mentions'
+    ];
+    
+    toggleIds.forEach(id => {
+      const element = document.getElementById(id);
+      if (element && settings[id] !== undefined) {
+        element.checked = settings[id];
+      }
+    });
+    
+    // Select inputs
+    if (settings.log_channel && document.getElementById('log_channel')) {
+      document.getElementById('log_channel').value = settings.log_channel;
+    }
+    
+    if (settings.auto_role && document.getElementById('auto_role')) {
+      document.getElementById('auto_role').value = settings.auto_role;
+    }
+    
+    // Checkboxes in moderation
+    const modCheckboxes = ['mod_spam', 'mod_links', 'mod_mentions'];
+    modCheckboxes.forEach(id => {
+      const element = document.getElementById(id);
+      if (element && settings[id] !== undefined) {
+        element.checked = settings[id];
+      }
+    });
+    
+  }, 500);
+}
 
             async saveSetting(name, value) {
-                try {
-                    // Save to your backend
-                    const response = await fetch('/api/save-setting', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            guildId: this.serverId,
-                            setting: name,
-                            value: value
-                        })
-                    });
+  // Update local settings
+  this.settings[name] = value;
+  
+  try {
+    // Save to database via bulk API
+    const response = await fetch(`/api/server-settings-bulk?guildId=${this.serverId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.settings)
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      this.settings = result.settings;
+      this.showToast(`Saved ${name} successfully!`, 'success');
+    } else {
+      throw new Error('Failed to save');
+    }
+  } catch (error) {
+    this.showToast(`Failed to save ${name}: ${error.message}`, 'error');
+  }
+}
                     
                     if (response.ok) {
                         // Show success message
