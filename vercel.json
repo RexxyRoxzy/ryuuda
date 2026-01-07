@@ -1,8 +1,21 @@
 {
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/dashboard/index.html" },
+    { "source": "/dashboard/server/:id", "destination": "/dashboard/server/index.html?guildId=:id" },
+    { "source": "/terms-of-service", "destination": "/terms-of-service/index.html" },
+    { "source": "/privacy-policy", "destination": "/privacy-policy/index.html" },
+    { "source": "/profile", "destination": "/profile/index.html" },
+    { "source": "/api/:path*", "destination": "/api/:path*" }
+  ],
+  "headers": [
     {
-      "source": "/dashboard/server/:id",
-      "destination": "/dashboard/server/index.html"
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
     }
   ]
 }
