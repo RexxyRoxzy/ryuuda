@@ -2,11 +2,14 @@
   "rewrites": [
     { "source": "/", "destination": "/index.html" },
     { "source": "/dashboard", "destination": "/dashboard/index.html" },
-    { "source": "/dashboard/server/:id", "destination": "/dashboard/server/index.html?guildId=:id" },
+    { 
+      "source": "/dashboard/server/:id", 
+      "destination": "/dashboard/server/index.html"
+    },
     { "source": "/terms-of-service", "destination": "/terms-of-service/index.html" },
     { "source": "/privacy-policy", "destination": "/privacy-policy/index.html" },
     { "source": "/profile", "destination": "/profile/index.html" },
-    { "source": "/api/:path*", "destination": "/api/:path*" }
+    { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
     {
@@ -17,5 +20,9 @@
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
       ]
     }
-  ]
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url"
+  },
+  "buildCommand": "prisma generate"
 }
