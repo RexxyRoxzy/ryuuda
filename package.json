@@ -1,13 +1,16 @@
 {
-  "name": "ryuuda-dashboard",
+  "name": "ryuuda",
   "version": "1.0.0",
-  "description": "Ryuuda Discord Bot Dashboard",
   "scripts": {
     "dev": "vercel dev",
-    "start": "vercel start"
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@prisma/client": "^5.7.0",
+    "prisma": "^5.7.0"
+  },
   "engines": {
-    "node": "24.x"
+    "node": ">=18.0.0"
   }
 }
