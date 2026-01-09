@@ -1,6 +1,6 @@
-// This is what your dashboard is calling
+// api/server-settings.js
 module.exports = async (req, res) => {
-  // Set CORS headers
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -11,53 +11,53 @@ module.exports = async (req, res) => {
   
   const { guildId } = req.query;
   
-  console.log(`[API] server-settings called for guild: ${guildId}, method: ${req.method}`);
+  console.log(`API: server-settings pour guild ${guildId}, méthode ${req.method}`);
   
-  if (req.method === 'GET') {
-    // Your dashboard expects this exact structure:
-    return res.status(200).json({
-      success: true,
-      guildId: guildId,
-      welcome: {
-        enabled: false,
-        channel: '',
-        message: 'Welcome {user} to {server}!'
-      },
-      logging: {
-        enabled: false,
-        channel: ''
-      },
-      moderation: {
-        enabled: true,
-        autoMod: false
-      },
-      members: {
-        total: 156,
-        online: 42,
-        bots: 8,
-        onlinePercent: 26.9
-      }
-    });
-  }
-  
-  if (req.method === 'POST') {
-    // Log what your dashboard is sending
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    
-    req.on('end', () => {
-      console.log('[API] Received settings:', body);
-      // Always return success
+  try {
+    if (req.method === 'GET') {
+      // Retourne les données que ton dashboard attend
       return res.status(200).json({
-        success: true,
-        message: 'Settings saved successfully!'
+        welcome: {
+          enabled: true,
+          channel: 'général',
+          message: 'Bienvenue {user} dans {server}!'
+        },
+        logging: {
+          enabled: false,
+          channel: 'logs'
+        },
+        moderation: {
+          enabled: true,
+          autoMod: true
+        }
       });
-    });
+    }
     
-    return;
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+      
+      req.on('end', () => {
+        console.log('Settings reçus:', body);
+        // Simule un succès
+        return res.status(200).json({ 
+          success: true, 
+          message: 'Paramètres sauvegardés avec succès!'
+        });
+      });
+      
+      return;
+    }
+    
+    return res.status(405).json({ error: 'Méthode non autorisée' });
+    
+  } catch (error) {
+    console.error('Erreur API:', error);
+    return res.status(500).json({ 
+      error: 'Erreur serveur',
+      details: error.message 
+    });
   }
-  
-  return res.status(404).json({ error: 'Not found' });
 };
