@@ -12,6 +12,25 @@ export default async function handler(req, res) {
       });
     }
 
+if (req.query.guildId) {
+  // Return info for a specific guild
+  try {
+    const botToken = process.env.DISCORD_BOT_TOKEN;
+    const response = await fetch(`https://discord.com/api/v10/guilds/${req.query.guildId}`, {
+      headers: {
+        Authorization: `Bot ${botToken}`,
+      },
+    });
+    
+    if (response.ok) {
+      const guild = await response.json();
+      return res.status(200).json(guild);
+    }
+  } catch (error) {
+    // Fall through to return guilds array
+  }
+}
+
     // Fetch bot's guilds from Discord API
     const response = await fetch('https://discord.com/api/v10/users/@me/guilds', {
       headers: {
