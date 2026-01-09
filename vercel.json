@@ -14,11 +14,5 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "DISCORD_CLIENT_ID": "@discord_client_id",
-    "DISCORD_BOT_TOKEN": "@discord_bot_token",
-    "MODE_ENV": "production"
-  }
+  ]
 }
