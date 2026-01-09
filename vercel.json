@@ -22,7 +22,7 @@
     }
   ],
   "env": {
-    "DATABASE_URL": "@DATABASE_URL"
+    "DATABASE_URL": "@database_url"
   },
   "buildCommand": "prisma generate"
 }
