@@ -1,0 +1,23 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ServerSettings {
+  id             String   @id @default(cuid())
+  guildId        String   @unique
+  welcomeEnabled Boolean  @default(false)
+  welcomeChannel String   @default("")
+  welcomeMessage String   @default("Bienvenue {user} dans {server}!")
+  loggingEnabled Boolean  @default(false)
+  loggingChannel String   @default("")
+  moderationEnabled Boolean @default(false)
+  autoMod        Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
