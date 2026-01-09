@@ -1,31 +1,54 @@
-// api/guild-members.js - For active member counts
+// api/guild-members.js
+const { getGuildMembers } = require('lib/discord');
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   const { guildId } = req.query;
-  
+
   if (!guildId) {
     return res.status(400).json({ error: 'Missing guildId' });
   }
 
-  // Mock data for now
-  const mockData = {
-    total: Math.floor(Math.random() * 200) + 50,
-    online: Math.floor(Math.random() * 80) + 10,
-    idle: Math.floor(Math.random() * 20) + 5,
-    dnd: Math.floor(Math.random() * 15) + 2,
-    offline: Math.floor(Math.random() * 150) + 30,
-    bots: Math.floor(Math.random() * 20) + 3,
-    roles: [
-      { name: 'Admin', count: Math.floor(Math.random() * 5) + 1, color: '#ff3b1a' },
-      { name: 'Moderator', count: Math.floor(Math.random() * 10) + 3, color: '#5865F2' },
-      { name: 'Member', count: Math.floor(Math.random() * 100) + 50, color: '#57F287' }
-    ]
-  };
+  try {
+    console.log(`[API] Fetching REAL members for guild: ${guildId}`);
+    
+    // Essaie d'abord de récupérer les vraies données
+    const realMembers = await getGuildMembers(guildId);
+    
+    return res.status(200).json({
+      success: true,
+      guildId,
+      ...realMembers,
+      timestamp: new Date().toISOString(),
+      source: 'REAL_DISCORD_API'
+    });
 
-  return res.status(200).json({
-    success: true,
-    guildId,
-    ...mockData
-  });
+  } catch (error) {
+    console.error('Failed to get real members, using fallback:', error);
+    
+    // Fallback si le bot n'a pas accès
+    const fallbackData = {
+      total: 'FAILED TO FETCH',
+      online: 'FAILED TO FETCH',
+      idle: 'FAILED TO FETCH',
+      dnd: 'FAILED TO FETCH',
+      offline: 'FAILED TO FETCH',
+      bots: 'FAILED TO FETCH',
+      source: 'FALLBACK_DATA'
+    };
+    
+    return res.status(200).json({
+      success: true,
+      guildId,
+      ...fallbackData,
+      warning: 'Using fallback data. Make sure bot has permissions.'
+    });
+  }
 };
