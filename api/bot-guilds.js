@@ -1,5 +1,5 @@
 // api/bot-guilds.js
-const { getGuild } = require('lib/discord');
+const { getGuild } = require('lib/discord.js');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
